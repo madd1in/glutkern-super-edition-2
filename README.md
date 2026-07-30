@@ -33,6 +33,7 @@ Ein eigenständiges Three.js-Browsergame. Öffne `index.html` oder spiele die ve
 - Tageszeit-Index beim Start und Neustart abgesichert; kein `PHASES[-1].hor`-Fehler mehr
 - Mobile Touch-Ziele, Beschriftungen und Joystick deutlich vergrößert; eigene Größen für Hoch- und Querformat
 - Echtes Twin-Stick-Gameplay: links bewegen, rechts zielen und feuern; Auto-Aim bleibt optional
+- 190-px-Floating-Sticks springen unter den Finger, sind transparent und geben aktives sowie haptisches Feedback
 
 ## Deployment
 

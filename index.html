@@ -129,21 +129,24 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
 #scanlines{position:absolute;inset:0;opacity:.1;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
 
 #mobile{position:absolute;inset:0;pointer-events:none}
-#mTop{position:absolute;right:calc(12px + env(safe-area-inset-right));top:calc(118px + env(safe-area-inset-top));display:flex;gap:8px;pointer-events:auto}
+.stickZone{position:fixed;bottom:0;width:50vw;height:100vh;pointer-events:auto;touch-action:none;z-index:2}
+#moveZone{left:0}#aimZone{right:0}
+#mTop{position:absolute;right:calc(12px + env(safe-area-inset-right));top:calc(118px + env(safe-area-inset-top));display:flex;gap:8px;pointer-events:auto;z-index:5}
 #mTop .mbtn{width:58px;height:58px;font-size:1.05rem}
-#joyBase{position:absolute;left:calc(24px + env(safe-area-inset-left));bottom:calc(24px + env(safe-area-inset-bottom));width:150px;height:150px;border:3px solid rgba(255,106,43,.65);
-  border-radius:50%;background:rgba(22,11,8,.55);pointer-events:auto;touch-action:none;
-  box-shadow:0 0 24px rgba(255,106,43,.25),inset 0 0 30px rgba(0,0,0,.5)}
+#joyBase{position:fixed;left:calc(12px + env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom));width:190px;height:190px;border:3px solid rgba(255,106,43,.48);
+  border-radius:50%;background:rgba(22,11,8,.2);pointer-events:none;opacity:.42;transition:opacity .12s,border-color .12s;
+  box-shadow:0 0 20px rgba(255,106,43,.12),inset 0 0 28px rgba(0,0,0,.22)}
 #joyKnob{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#ffd9b0,#ff6a2b 72%);box-shadow:0 0 18px rgba(255,106,43,.7)}
-#aimBase{position:absolute;right:calc(18px + env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));width:176px;height:176px;border:3px solid rgba(94,242,255,.72);
-  border-radius:50%;background:rgba(8,32,38,.62);pointer-events:auto;touch-action:none;box-shadow:0 0 28px rgba(94,242,255,.2),inset 0 0 34px rgba(0,0,0,.55)}
+#aimBase{position:fixed;right:calc(12px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));width:190px;height:190px;border:3px solid rgba(94,242,255,.48);
+  border-radius:50%;background:rgba(8,32,38,.2);pointer-events:none;opacity:.42;transition:opacity .12s,border-color .12s;box-shadow:0 0 20px rgba(94,242,255,.12),inset 0 0 28px rgba(0,0,0,.22)}
 #aimBase::after{content:'ZIELEN + FEUERN';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:.5rem;letter-spacing:.08em;color:rgba(174,248,255,.65);white-space:nowrap}
 #aimKnob{position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px;border-radius:50%;z-index:1;
   background:radial-gradient(circle at 35% 30%,#d9fdff,#31a9bb 72%);box-shadow:0 0 22px rgba(94,242,255,.7)}
-#mBtns{position:absolute;right:calc(12px + env(safe-area-inset-right));bottom:calc(204px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
+.stickZone.active #joyBase,.stickZone.active #aimBase{opacity:.82;border-color:rgba(255,255,255,.78)}
+#mBtns{position:absolute;right:calc(12px + env(safe-area-inset-right));bottom:calc(214px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none;z-index:5}
 .mrow{display:flex;gap:12px}
-.mbtn{width:72px;height:72px;border:2px solid var(--line);background:rgba(22,11,8,.8);color:var(--gold);
+.mbtn{width:76px;height:76px;border:2px solid var(--line);background:rgba(22,11,8,.52);color:var(--gold);
   font-family:'Russo One';font-size:1.35rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   clip-path:polygon(22% 0,78% 0,100% 22%,100% 78%,78% 100%,22% 100%,0 78%,0 22%);
   touch-action:none;-webkit-tap-highlight-color:transparent;cursor:pointer;pointer-events:auto}
@@ -152,15 +155,13 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
 .mbtn.big.on{background:rgba(94,242,255,.16);box-shadow:0 0 24px rgba(94,242,255,.45)}
 .mbtn:active{filter:brightness(1.6)}
 @media(max-width:600px){
-  #joyBase{left:calc(8px + env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));width:168px;height:168px}#joyKnob{width:78px;height:78px;margin:-39px}
-  #aimBase{right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));width:168px;height:168px}#aimKnob{width:78px;height:78px;margin:-39px}
-  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(184px + env(safe-area-inset-bottom));gap:8px}.mrow{gap:8px}.mbtn{width:70px;height:70px}
+  #joyBase,#aimBase{width:190px;height:190px}#joyKnob,#aimKnob{width:88px;height:88px;margin:-44px}
+  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(208px + env(safe-area-inset-bottom));gap:8px}.mrow{gap:8px}.mbtn{width:74px;height:74px}
   #hudTL,#hudTR{transform:scale(.8);transform-origin:top left}#hudTR{transform-origin:top right}}
 @media(max-height:520px){
   #mTop{top:calc(62px + env(safe-area-inset-top))}#mTop .mbtn{width:52px;height:52px}
-  #joyBase{left:calc(8px + env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));width:140px;height:140px}#joyKnob{width:66px;height:66px;margin:-33px}
-  #aimBase{right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));width:140px;height:140px}#aimKnob{width:66px;height:66px;margin:-33px}
-  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(154px + env(safe-area-inset-bottom));gap:6px}.mrow{gap:6px}.mbtn{width:62px;height:62px}}
+  #joyBase,#aimBase{width:160px;height:160px}#joyKnob,#aimKnob{width:74px;height:74px;margin:-37px}
+  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(174px + env(safe-area-inset-bottom));gap:6px}.mrow{gap:6px}.mbtn{width:66px;height:66px}}
 
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto;
   background:linear-gradient(180deg,rgba(9,4,3,.82),rgba(18,7,4,.58) 45%,rgba(34,12,5,.8))}
@@ -310,7 +311,7 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
       <button id="btnPause" class="mbtn">Ⅱ<span>PAUSE</span></button>
       <button id="btnAuto" class="mbtn on">⌖<span>AUTO</span></button>
     </div>
-    <div id="joyBase"><div id="joyKnob"></div></div>
+    <div id="moveZone" class="stickZone"><div id="joyBase"><div id="joyKnob"></div></div></div>
     <div id="mBtns">
       <div class="mrow">
         <button id="btnDash" class="mbtn">⇧<span>DASH</span></button>
@@ -318,7 +319,7 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
         <button id="btnOrb" class="mbtn">☄<span>ORBITAL</span></button>
       </div>
     </div>
-    <div id="aimBase"><div id="aimKnob"></div></div>
+    <div id="aimZone" class="stickZone"><div id="aimBase"><div id="aimKnob"></div></div></div>
   </div>
 
   <div id="relic" class="overlay hidden">
@@ -2433,34 +2434,38 @@ function setPaused(v){paused=v;$('paused').classList.toggle('hidden',!v);
   if(AC){v?AC.suspend():AC.resume();}}
 
 if(isTouch){
-  const jb=$('joyBase'),jk=$('joyKnob');let stickId=null;
+  const mz=$('moveZone'),jb=$('joyBase'),jk=$('joyKnob');let stickId=null;
+  const placeStick=function(base,e){const size=base.offsetWidth,half=size/2;
+    const cx=clamp(e.clientX,half+4,W-half-4),cy=clamp(e.clientY,half+70,H-half-4);
+    base.style.left=(cx-half)+'px';base.style.top=(cy-half)+'px';base.style.right='auto';base.style.bottom='auto';};
   const moveStick=function(e){const r=jb.getBoundingClientRect();
     let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
     const d=Math.hypot(dx,dy),m=r.width*.36;if(d>m){dx*=m/d;dy*=m/d;}
     joyX=dx/m;joyY=dy/m;jk.style.transform='translate('+dx+'px,'+dy+'px)';};
-  jb.addEventListener('pointerdown',function(e){e.preventDefault();stickId=e.pointerId;
-    jb.setPointerCapture(e.pointerId);moveStick(e);});
-  jb.addEventListener('pointermove',function(e){if(e.pointerId===stickId)moveStick(e);});
-  const end=function(e){if(e.pointerId===stickId){stickId=null;joyX=joyY=0;jk.style.transform='translate(0,0)';}};
-  jb.addEventListener('pointerup',end);jb.addEventListener('pointercancel',end);jb.addEventListener('lostpointercapture',end);
-  const ab=$('aimBase'),ak=$('aimKnob');let aimId=null;
+  mz.addEventListener('pointerdown',function(e){e.preventDefault();stickId=e.pointerId;placeStick(jb,e);mz.classList.add('active');
+    mz.setPointerCapture(e.pointerId);moveStick(e);});
+  mz.addEventListener('pointermove',function(e){if(e.pointerId===stickId)moveStick(e);});
+  const end=function(e){if(e.pointerId===stickId){stickId=null;joyX=joyY=0;jk.style.transform='translate(0,0)';mz.classList.remove('active');}};
+  mz.addEventListener('pointerup',end);mz.addEventListener('pointercancel',end);mz.addEventListener('lostpointercapture',end);
+  const az=$('aimZone'),ab=$('aimBase'),ak=$('aimKnob');let aimId=null;
   const moveAim=function(e){const r=ab.getBoundingClientRect();
     let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
     const d=Math.hypot(dx,dy),m=r.width*.36;if(d>m){dx*=m/d;dy*=m/d;}
     aimX=dx/m;aimY=dy/m;aimActive=Math.hypot(aimX,aimY)>.16;
     ak.style.transform='translate('+dx+'px,'+dy+'px)';};
-  ab.addEventListener('pointerdown',function(e){e.preventDefault();aimId=e.pointerId;ab.setPointerCapture(e.pointerId);moveAim(e);});
-  ab.addEventListener('pointermove',function(e){if(e.pointerId===aimId)moveAim(e);});
-  const endAim=function(e){if(e.pointerId===aimId){aimId=null;aimActive=false;aimX=aimY=0;ak.style.transform='translate(0,0)';}};
-  ab.addEventListener('pointerup',endAim);ab.addEventListener('pointercancel',endAim);ab.addEventListener('lostpointercapture',endAim);
+  az.addEventListener('pointerdown',function(e){e.preventDefault();aimId=e.pointerId;placeStick(ab,e);az.classList.add('active');az.setPointerCapture(e.pointerId);moveAim(e);});
+  az.addEventListener('pointermove',function(e){if(e.pointerId===aimId)moveAim(e);});
+  const endAim=function(e){if(e.pointerId===aimId){aimId=null;aimActive=false;aimX=aimY=0;ak.style.transform='translate(0,0)';az.classList.remove('active');}};
+  az.addEventListener('pointerup',endAim);az.addEventListener('pointercancel',endAim);az.addEventListener('lostpointercapture',endAim);
   const bindBtn=function(id,fn){const b=$(id);
-    b.addEventListener('pointerdown',function(e){e.preventDefault();fn();});};
+    b.addEventListener('pointerdown',function(e){e.preventDefault();if(navigator.vibrate)navigator.vibrate(10);fn();});};
   bindBtn('btnDash',doDash);bindBtn('btnNova',doNova);bindBtn('btnOrb',callOrbital);
   bindBtn('btnMute',function(){muted=!muted;if(master)master.gain.value=muted?0:.7;soundtrack.muted=muted;toast(muted?'TON AUS':'TON AN');});
   bindBtn('btnPause',function(){if(state==='playing')setPaused(!paused);});
   bindBtn('btnAuto',function(){autoFire=!autoFire;$('btnAuto').classList.toggle('on',autoFire);
     toast(autoFire?'AUTO-AIM AN':'AUTO-AIM AUS');});}
-addEventListener('visibilitychange',function(){if(document.hidden){aimActive=false;aimX=aimY=joyX=joyY=0;keys.fire=false;}});
+addEventListener('visibilitychange',function(){if(document.hidden){aimActive=false;aimX=aimY=joyX=joyY=0;keys.fire=false;
+  const mz=$('moveZone'),az=$('aimZone');if(mz)mz.classList.remove('active');if(az)az.classList.remove('active');}});
 
 /* ---------- Render ---------- */
 const clock=new THREE.Clock();
