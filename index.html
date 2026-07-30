@@ -529,7 +529,11 @@ const ph={hor:PHASES[1].hor.slice(),mid:PHASES[1].mid.slice(),top:PHASES[1].top.
   sunI:PHASES[1].sunI,sunPos:PHASES[1].sunPos.slice(),star:PHASES[1].star,fogC:PHASES[1].fogC.slice(),fogD:PHASES[1].fogD,
   hemiC:PHASES[1].hemiC.slice(),hemiI:PHASES[1].hemiI,dirC:PHASES[1].dirC.slice(),dirI:PHASES[1].dirI,musicF:PHASES[1].musicF,
   tint:PHASES[1].tint.slice()};
-function lerpPhase(dt){const T=bloodMoon?BLOOD:PHASES[phaseIdx],k=1-Math.exp(-dt/3.5);
+function lerpPhase(dt){
+  const raw=Number.isFinite(phaseIdx)?phaseIdx:1;
+  const safeIdx=((raw%PHASES.length)+PHASES.length)%PHASES.length;
+  if(safeIdx!==phaseIdx)phaseIdx=safeIdx;
+  const T=bloodMoon?BLOOD:(PHASES[safeIdx]||PHASES[1]),k=1-Math.exp(-dt/3.5);
   const fs=['hor','mid','top','sunCol','sunPos','fogC','hemiC','dirC','tint'];
   for(let fi=0;fi<fs.length;fi++){const f=fs[fi];
     for(let i=0;i<3;i++)ph[f][i]+=(T[f][i]-ph[f][i])*k;}
@@ -1709,7 +1713,7 @@ function update(dt){
 
   if(state==='playing'){
     waveTime+=g;
-    if(!bloodMoon){const cycle=((wave-1)+Math.floor(waveTime/22))%4;
+    if(wave>0&&!bloodMoon){const cycle=((wave-1+Math.floor(waveTime/22))%PHASES.length+PHASES.length)%PHASES.length;
       if(cycle!==phaseIdx){phaseIdx=cycle;toast('TAGESZEIT: '+PHASES[phaseIdx].name);}}
     if(isTouch){
       let best=null,bd=1e9;
@@ -2358,7 +2362,7 @@ function resetGame(){
   bodyM.material.emissive.setHex(0x000000);bodyM.material.emissiveIntensity=0;
   dashCd=0;novaCd=0;starT=0;shieldT=0;inv=1;fireCd=0;pipeCd=0;shake=0;slowmo=0;boss=null;
   killCA=0;dmgCA=0;bloomKick=0;novaGlow=0;filterDip=0;pulseFx=0;
-  rauschT=0;hbT=0;waveTime=0;curMut=null;bloodMoon=false;
+  rauschT=0;hbT=0;waveTime=0;curMut=null;bloodMoon=false;phaseIdx=1;
   $('mutChip').classList.add('hidden');$('moonChip').classList.add('hidden');
   $('rauschChip').classList.add('hidden');$('starChip').classList.add('hidden');
   $('bigChip').classList.add('hidden');
@@ -2374,6 +2378,7 @@ function resetGame(){
   updHpUI();updComboUI();updCoreUI();updWaffeUI();
   $('waveNum').textContent='—';$('scoreNum').textContent='0';}
 function startGame(){
+  $('err').classList.add('hidden');
   initAudio();if(AC&&AC.state==='suspended')AC.resume();
   soundtrack.muted=muted;soundtrack.play().catch(function(){});
   sfx.ui();
