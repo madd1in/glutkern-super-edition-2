@@ -23,6 +23,8 @@ Ein eigenständiges Three.js-Browsergame. Öffne `index.html` oder spiele die ve
 - Ruhige Comfort-Kamera ohne Aim-Vorhalt, Screen-Shake oder Zoom-Pumpen
 - Filmisches Tone-Mapping mit reduzierter Belichtung und schwächeren dynamischen Lichtern
 - Vollständige Mobile-Steuerung mit Joystick, Halte-Feuer, Auto-Feuer, Fähigkeiten, Ton und Pause
+- Performance-Profil mit 0,82× Renderauflösung, deaktiviertem Antialiasing und reduzierten Effektpools
+- Dunkler Sky-Shader und dunkler Nebel; MP3-Musik deutlich vor leiseren SFX
 
 ## Deployment
 
