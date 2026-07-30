@@ -20,6 +20,9 @@ Ein eigenständiges Three.js-Browsergame. Öffne `index.html` oder spiele die ve
 - Mausziel und Kameravorhalt bleiben sicher innerhalb der Arena
 - Klarer Direkt-Render ohne Bloom ist jetzt Standard
 - Weniger Partikel, niedrigere Renderauflösung und halbierte Blur-Pässe für stabilere FPS
+- Ruhige Comfort-Kamera ohne Aim-Vorhalt, Screen-Shake oder Zoom-Pumpen
+- Filmisches Tone-Mapping mit reduzierter Belichtung und schwächeren dynamischen Lichtern
+- Vollständige Mobile-Steuerung mit Joystick, Halte-Feuer, Auto-Feuer, Fähigkeiten, Ton und Pause
 
 ## Deployment
 
