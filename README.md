@@ -17,6 +17,9 @@ Ein eigenständiges Three.js-Browsergame. Öffne `index.html` oder spiele die ve
 - Ruhigeres Bloom und kontrastreicheres Tone-Mapping gegen Überbelichtung
 - Grafikmodus zur Laufzeit mit `V` umschaltbar
 - Audio-Parameter werden gegen ungültige Werte abgesichert
+- Mausziel und Kameravorhalt bleiben sicher innerhalb der Arena
+- Klarer Direkt-Render ohne Bloom ist jetzt Standard
+- Weniger Partikel, niedrigere Renderauflösung und halbierte Blur-Pässe für stabilere FPS
 
 ## Deployment
 

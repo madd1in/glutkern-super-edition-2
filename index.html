@@ -383,9 +383,10 @@ const camera=new THREE.PerspectiveCamera(55,W/H,0.1,700);
 const isTouch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>1;
 if(isTouch)document.body.classList.add('touch');
 const LOW=isTouch;
-let bloomOn=!LOW;
-const prMax=Math.min(devicePixelRatio||1,LOW?1.0:1.5);let pr=prMax,fAcc=0,fN=0;
-const PMAX=LOW?320:520, WMAX=LOW?160:260, EMBN=LOW?90:160, MOTHN=LOW?2:4;
+/* Klarer Direkt-Render ist absichtlich Standard: schneller und ohne ausgebrannte Lichter. */
+let bloomOn=false;
+const prMax=Math.min(devicePixelRatio||1,LOW?.9:1.15);let pr=prMax,fAcc=0,fN=0;
+const PMAX=LOW?240:360, WMAX=LOW?120:180, EMBN=LOW?70:110, MOTHN=LOW?2:3;
 const TRAIL_ON=!LOW;
 const renderer=new THREE.WebGLRenderer({antialias:!LOW,powerPreference:'high-performance'});
 renderer.setPixelRatio(pr);renderer.setSize(W,H);
@@ -448,12 +449,11 @@ function sizeRTs(){const w=Math.max(2,Math.floor(W*pr)),h=Math.max(2,Math.floor(
   rtScene.setSize(w,h);const qw=Math.max(2,w>>2),qh=Math.max(2,h>>2);
   rtA.setSize(qw,qh);rtB.setSize(qw,qh);blurTexel.set(1/qw,1/qh);}
 sizeRTs();
-function qLabel(){return bloomOn?'ULTRA':pr>=1.25?'HOCH':pr>=1?'MITTEL':'SPARSAM';}
+function qLabel(){return bloomOn?'BLOOM':pr>=1?'KLAR':'SPARSAM';}
 function perfTick(dt){fAcc+=dt;fN++;if(fN>=40){const a=fAcc/fN;fAcc=0;fN=0;
   if(a>0.020){if(bloomOn){bloomOn=false;toast('AUTO-GRAFIK: BLOOM AUS');}
     else if(pr>0.65){pr=Math.max(.65,pr-.15);renderer.setPixelRatio(pr);renderer.setSize(W,H);sizeRTs();toast('AUTO-GRAFIK: '+qLabel());}}
-  else if(a<0.013){if(pr<prMax){pr=Math.min(prMax,pr+.1);renderer.setPixelRatio(pr);renderer.setSize(W,H);sizeRTs();}
-    else if(!bloomOn&&!LOW){bloomOn=true;toast('AUTO-GRAFIK: '+qLabel());}}}}
+  else if(a<0.013&&pr<prMax){pr=Math.min(prMax,pr+.1);renderer.setPixelRatio(pr);renderer.setSize(W,H);sizeRTs();}}}
 addEventListener('resize',function(){W=innerWidth;H=innerHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);sizeRTs();});
 
 /* ---------- Texturen ---------- */
@@ -1213,7 +1213,7 @@ const strikes=[],boltFx=[],pools=[];
 let boss=null,best=+(localStorage.getItem('glutkern_best')||0);
 $('bestScore').textContent=best.toLocaleString('de-DE');
 const enemies=[],geysers=[];
-const keys={},mouseNDC=new THREE.Vector2();
+const keys={},mouseNDC=new THREE.Vector2();let mouseActive=false;
 const aimPoint=new THREE.Vector3(0,0,-5);
 const raycaster=new THREE.Raycaster(),groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
 const boomLight=new THREE.PointLight(0xff9a3d,0,36);scene.add(boomLight);
@@ -1701,8 +1701,10 @@ function update(dt){
       else trailMat.uniforms.uCol.value.setHex(0x5ef2ff);}
     if(starT>0&&Math.random()<g*20){const i=pCur++%PMAX;
       setP(i,player.position.x+R(-.5,.5),player.position.y,player.position.z+R(-.5,.5),R(-2,2),R(2,5),R(-2,2),.4,.8,0xffe14d);}
-    if(!isTouch){raycaster.setFromCamera(mouseNDC,camera);
-      if(raycaster.ray.intersectPlane(groundPlane,aimPoint)===null)aimPoint.copy(player.position);}
+    if(!isTouch&&mouseActive){raycaster.setFromCamera(mouseNDC,camera);
+      if(raycaster.ray.intersectPlane(groundPlane,aimPoint)===null)aimPoint.copy(player.position);
+      const adx=aimPoint.x-player.position.x,adz=aimPoint.z-player.position.z,ad=Math.hypot(adx,adz);
+      if(ad>42){aimPoint.x=player.position.x+adx/ad*42;aimPoint.z=player.position.z+adz/ad*42;}}
     const ta=Math.atan2(aimPoint.x-player.position.x,aimPoint.z-player.position.z);
     player.rotation.y=lerpAngle(player.rotation.y,ta,1-Math.exp(-22*g));
     thruster.scale.setScalar(1.2+Math.sin(menuT*30)*.2+(dashT>0?1:0));
@@ -2240,8 +2242,9 @@ function update(dt){
     tmpV.set(player.position.x,player.position.y+25,player.position.z+20);
     camera.position.lerp(tmpV,1-Math.exp(-5*dt));
     if(shake>0){camera.position.x+=R(-1,1)*shake*.35;camera.position.y+=R(-1,1)*shake*.35;}
-    tmpV2.copy(player.position);
-    tmpV2.x+=(aimPoint.x-player.position.x)*.16;tmpV2.z+=(aimPoint.z-player.position.z)*.16;tmpV2.y=1;
+    tmpV2.set(aimPoint.x-player.position.x,0,aimPoint.z-player.position.z);
+    if(tmpV2.lengthSq()>36)tmpV2.setLength(6);
+    tmpV2.add(player.position);tmpV2.y=1;
     camera.lookAt(tmpV2);}
   const tFov=55+(dashT>0?7:0)+fovKick;
   curFov+=(tFov-curFov)*Math.min(1,dt*10);
@@ -2338,15 +2341,18 @@ addEventListener('keydown',function(e){
   if(k==='enter'&&(state==='menu'||state==='over'))startGame();
   if(k==='r'&&state==='over')startGame();});
 addEventListener('keyup',function(e){keys[e.key.toLowerCase()]=false;});
-addEventListener('mousemove',function(e){
-  mouseNDC.set((e.clientX/W)*2-1,-(e.clientY/H)*2+1);
-  if(state==='playing'&&!isTouch)
-    $('crosshair').style.transform='translate3d('+e.clientX+'px,'+e.clientY+'px,0)';});
+addEventListener('pointermove',function(e){
+  if(isTouch)return;
+  mouseActive=e.clientX>=0&&e.clientX<=W&&e.clientY>=0&&e.clientY<=H;
+  if(!mouseActive)return;
+  mouseNDC.set(clamp((e.clientX/W)*2-1,-1,1),clamp(-(e.clientY/H)*2+1,-1,1));
+  if(state==='playing')$('crosshair').style.transform='translate3d('+e.clientX+'px,'+e.clientY+'px,0)';});
+document.addEventListener('mouseleave',function(){mouseActive=false;keys.fire=false;});
 addEventListener('mousedown',function(e){if(state!=='playing'||isTouch)return;
   if(e.button===0)keys.fire=true;if(e.button===2)doNova();});
 addEventListener('mouseup',function(e){if(e.button===0)keys.fire=false;});
 addEventListener('contextmenu',function(e){e.preventDefault();});
-addEventListener('blur',function(){if(state==='playing'&&!paused)setPaused(true);keys.fire=false;});
+addEventListener('blur',function(){if(state==='playing'&&!paused)setPaused(true);mouseActive=false;keys.fire=false;});
 $('startBtn').addEventListener('click',startGame);
 $('againBtn').addEventListener('click',startGame);
 function setPaused(v){paused=v;$('paused').classList.toggle('hidden',!v);
@@ -2378,7 +2384,7 @@ function renderFrame(){
   quad.material=brightMat;brightMat.uniforms.tDiffuse.value=rtScene.texture;
   renderer.setRenderTarget(rtA);renderer.render(postScene,postCam);
   quad.material=blurMat;
-  const passes=[[rtA,rtB,1,0],[rtB,rtA,0,1],[rtA,rtB,2,0],[rtB,rtA,0,2]];
+  const passes=[[rtA,rtB,1,0],[rtB,rtA,0,1]];
   for(let pi=0;pi<passes.length;pi++){const p=passes[pi];
     blurMat.uniforms.tDiffuse.value=p[0].texture;
     blurMat.uniforms.uDir.value.set(p[2]*blurTexel.x,p[3]*blurTexel.y);
@@ -2387,7 +2393,7 @@ function renderFrame(){
   compMat.uniforms.tScene.value=rtScene.texture;
   compMat.uniforms.tBloom.value=rtA.texture;
   compMat.uniforms.uTime.value=menuT;
-  compMat.uniforms.uBloomI.value=.42+ph.star*.16+bloomKick*.25;
+  compMat.uniforms.uBloomI.value=.24+ph.star*.08+bloomKick*.12;
   compMat.uniforms.uCA.value=.0007+killCA+dmgCA;
   compMat.uniforms.uFlash.value=flashI*.14+novaGlow*.18;
   compMat.uniforms.uRausch.value=rauschT>0?.25+Math.sin(menuT*6)*.08:0;
