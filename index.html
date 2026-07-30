@@ -623,6 +623,15 @@ for(let i=0;i<MOTHN;i++){const s=glowSprite(0xffe878,.55,.8);
 const floorMat=new THREE.MeshStandardMaterial({map:floorTex,roughness:.9,metalness:0});
 const floor=new THREE.Mesh(new THREE.CircleGeometry(42,72),floorMat);floor.rotation.x=-Math.PI/2;scene.add(floor);
 
+/* Low-Poly-Terrainzonen: dunkle Basaltfelder, Sandinseln und kleine Felsgruppen. */
+const terrainZones=new THREE.Group();scene.add(terrainZones);
+const zoneCols=[0x27452c,0x5b3928,0x3b3b42,0x66512e];
+for(let i=0;i<8;i++){const a=i/8*Math.PI*2+.2,r=i%2?27:15;
+  const z=new THREE.Mesh(new THREE.CircleGeometry(i%2?5.5:4.2,9),new THREE.MeshBasicMaterial({color:zoneCols[i%4],transparent:true,opacity:.38,depthWrite:false}));
+  z.rotation.x=-Math.PI/2;z.rotation.z=R(0,3);z.position.set(Math.cos(a)*r,.025,Math.sin(a)*r);terrainZones.add(z);
+  if(i%2===0){for(let k=0;k<2;k++){const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(R(.55,1.05),0),mtnMat);
+    rock.scale.y=R(.55,1.4);rock.position.set(z.position.x+R(-2,2),R(.25,.65),z.position.z+R(-2,2));rock.rotation.set(R(0,2),R(0,2),R(0,2));terrainZones.add(rock);}}}
+
 const NOISE='float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}'+
 ' float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);'+
 ' return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}'+
@@ -743,6 +752,8 @@ function updParticles(dt){let dirty=false;
 const WEATHERS=[
  {id:'klar',name:'SONNENTAG',sub:'BESTES WETTER',fogAdd:0,wind:.02,rain:0},
  {id:'asche',name:'FRISCHE BRISE',sub:'WATTIG LEICHT',fogAdd:.002,wind:.2,rain:0},
+ {id:'vulkanasche',name:'VULKANASCHE',sub:'DER HIMMEL WIRD DUNKEL',fogAdd:.004,wind:.14,rain:0},
+ {id:'funken',name:'FUNKENSTURM',sub:'GLUT TREIBT DURCH DIE ARENA',fogAdd:.002,wind:.18,rain:0},
  {id:'regen',name:'REGEN',sub:'TROPFEN AUF DIE INSEL',fogAdd:.003,wind:.06,rain:.05},
  {id:'gewitter',name:'GEWITTER',sub:'BLITZE SUCHEN ZIELE',fogAdd:.003,wind:.1,rain:.03}];
 let weatherIdx=0,weatherT=R(35,55),windA=0;
@@ -751,7 +762,7 @@ function seedWeather(){const w=WEATHERS[weatherIdx];
   for(let i=0;i<WMAX;i++){const i3=i*3;
     wL.pos[i3]=R(-60,60);wL.pos[i3+1]=R(0,w.id==='asche'?16:26);wL.pos[i3+2]=R(-60,60);
     wSpd[i]=R(16,30);
-    if(w.id==='asche'){tmpColor.setHex(0xffffff);wL.size[i]=R(.5,1.1);wL.alp[i]=.4;}
+    if(w.id==='asche'||w.id==='vulkanasche'||w.id==='funken'){tmpColor.setHex(w.id==='funken'?0xff7a2b:(w.id==='vulkanasche'?0x7b6254:0xffffff));wL.size[i]=R(.5,1.1);wL.alp[i]=w.id==='funken'?.65:.4;}
     else if(w.id==='regen'){tmpColor.setHex(0x9fd0ff);wL.size[i]=R(.7,1.3);wL.alp[i]=.7;}
     else if(w.id==='gewitter'){tmpColor.setHex(0xb8c8e8);wL.size[i]=R(.5,.9);wL.alp[i]=i<WMAX*.4?.4:0;}
     else wL.alp[i]=0;
@@ -762,7 +773,7 @@ function updWeather(dt){const w=WEATHERS[weatherIdx];
   if(w.id==='klar'){let z=false;for(let i=0;i<WMAX;i++)if(wL.alp[i]>0){wL.alp[i]*=.95;z=true;}if(z)markLayer(wL);return;}
   windA+=dt*.04;const wx=Math.cos(windA),wz=Math.sin(windA);
   for(let i=0;i<WMAX;i++){const i3=i*3;
-    if(w.id==='asche'){
+    if(w.id==='asche'||w.id==='vulkanasche'||w.id==='funken'){
       wL.pos[i3]+=wx*22*dt;wL.pos[i3+2]+=wz*22*dt;wL.pos[i3+1]+=Math.sin(menuT*2+i)*.03;
       if(wL.pos[i3]>60)wL.pos[i3]=-60;if(wL.pos[i3]<-60)wL.pos[i3]=60;
       if(wL.pos[i3+2]>60)wL.pos[i3+2]=-60;if(wL.pos[i3+2]<-60)wL.pos[i3+2]=60;
@@ -1394,6 +1405,17 @@ function spawnEnemy(type,fx,fz){
     addEyes(e.body,.18,.24,.15,.56,false);
     const mouth=new THREE.Mesh(new THREE.BoxGeometry(.3,.12,.1),blackM);mouth.position.set(0,-.25,.56);e.body.add(mouth);
     e.shadow=makeShadow(2.2);e.bar=makeBar(1.5);e.bar.bg.position.y=1.6;g.add(e.bar.bg);
+  }else if(type==='huscher'){
+    e.hp=34+wave*2;e.speed=10.5+wave*.08;e.radius=.72;e.score=180;e.atkCd=.4;e.zig=R(0,9);
+    e.mat=new THREE.MeshStandardMaterial({color:0x7d4dff,flatShading:true,roughness:.45,emissive:0x32126f,emissiveIntensity:.3});
+    e.core=new THREE.Mesh(new THREE.TetrahedronGeometry(.78,0),e.mat);e.core.rotation.x=.45;e.body.add(e.core);
+    addEyes(e.body,.11,.17,.14,.48,true);e.shadow=makeShadow(1.7);
+  }else if(type==='waechter'){
+    e.hp=78+wave*4;e.speed=4.3;e.radius=1.15;e.score=360;e.shootT=R(.8,1.6);
+    e.mat=new THREE.MeshStandardMaterial({color:0x2b9fa8,flatShading:true,roughness:.5,emissive:0x0a4d55,emissiveIntensity:.3});
+    e.core=new THREE.Mesh(new THREE.OctahedronGeometry(1,0),e.mat);e.body.add(e.core);
+    const halo=new THREE.Mesh(new THREE.TorusGeometry(1.25,.1,6,16),new THREE.MeshBasicMaterial({color:0x62e8ef}));halo.rotation.x=Math.PI/2;e.body.add(halo);e.halo=halo;
+    addEyes(e.body,.14,.22,.18,.72,false);e.shadow=makeShadow(2.5);e.bar=makeBar(1.7);e.bar.bg.position.y=1.8;g.add(e.bar.bg);
   }else if(type==='koloss'){
     e.hp=190+wave*10;e.speed=3;e.radius=1.9;e.score=600;e.slamCd=1.5;e.windup=0;
     e.mat=new THREE.MeshStandardMaterial({color:0xa06a42,flatShading:true,roughness:.9,emissive:0xa06a42,emissiveIntensity:.2});
@@ -1597,7 +1619,8 @@ const EVENTS=[
  {id:'schrott',name:'MÜNZREGEN',sub:'FANG SIE AUF'},
  {id:'doppel',name:'DOPPELPUNKTE',sub:'15 SEK ×2'},
  {id:'segen',name:'GLUTSEGEN',sub:'+25 ÜBER ZEIT'},
- {id:'kometen',name:'KOMETENSCHAUER',sub:'DER HIMMEL FÄLLT'}];
+ {id:'kometen',name:'KOMETENSCHAUER',sub:'DER HIMMEL FÄLLT'},
+ {id:'ansturm',name:'SCHATTENANSTURM',sub:'HUSCHER AUS ALLEN RICHTUNGEN'}];
 function buildWave(n){const q=[];
   if(n%5===0){
     if(n>=15){q.push('boss','boss');q.push('funke','funke');}
@@ -1606,16 +1629,20 @@ function buildWave(n){const q=[];
   const f=Math.min(4+n*2,18)+((curMut&&curMut.extra)?curMut.extra:0);
   for(let i=0;i<f;i++)q.push('funke');
   if(n>=2){const s=Math.min(1+((n-2)>>1),6);for(let i=0;i<s;i++)q.push('schleuder');}
+  if(n>=3){const h=Math.min(1+((n-3)>>1),5);for(let i=0;i<h;i++)q.push('huscher');}
+  if(n>=4){const w=Math.min(1+((n-4)/3|0),3);for(let i=0;i<w;i++)q.push('waechter');}
   if(n>=3){const k=Math.min(1+((n-3)/3|0),4);for(let i=0;i<k;i++)q.push('koloss');}
   for(let i=q.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;const t=q[i];q[i]=q[j];q[j]=t;}
   return q;}
 function wavePreview(n){const q=buildWave(n);
-  const c={funke:0,schleuder:0,koloss:0,boss:0};
+  const c={funke:0,schleuder:0,huscher:0,waechter:0,koloss:0,boss:0};
   for(let i=0;i<q.length;i++)c[q[i]]++;
   if(c.boss)return '⚠ NÄCHSTE WELLE: '+(c.boss>1?'DOPPEL-KÖNIG':'KÖNIG GLUT')+' ⚠';
   const parts=[];
   if(c.funke)parts.push(c.funke+'× STACHI');
   if(c.schleuder)parts.push(c.schleuder+'× WÜRFLER');
+  if(c.huscher)parts.push(c.huscher+'× HUSCHER');
+  if(c.waechter)parts.push(c.waechter+'× STURMWÄCHTER');
   if(c.koloss)parts.push(c.koloss+'× FELSBROCKEN');
   return 'NÄCHSTE WELLE: '+parts.join(' · ');}
 function startWave(n){
@@ -1643,6 +1670,7 @@ function startWave(n){
     if(nextEvent.id==='doppel'){doubleT=15;$('doubleChip').classList.remove('hidden');}
     if(nextEvent.id==='segen'){healLeft=25;toast('GLUTSEGEN WIRKT');}
     if(nextEvent.id==='kometen'){cometQ=8;cometT=2.5;}
+    if(nextEvent.id==='ansturm'){for(let i=0;i<4;i++){const a=i/4*Math.PI*2;spawnEnemy('huscher',Math.cos(a)*36,Math.sin(a)*36);}}
     nextEvent=null;}
   banner(isBoss?[(n>=15?'⚠ DOPPEL-KÖNIG ERWACHT ⚠':'⚠ KÖNIG GLUT ERWACHT ⚠'),b2]:['WELLE '+n,b2],isBoss||bloodMoon);
   if(isBoss)sfx.boss();else if(bloodMoon)sfx.warn();else sfx.wave();}
@@ -1680,6 +1708,8 @@ function update(dt){
 
   if(state==='playing'){
     waveTime+=g;
+    if(!bloodMoon){const cycle=((wave-1)+Math.floor(waveTime/22))%4;
+      if(cycle!==phaseIdx){phaseIdx=cycle;toast('TAGESZEIT: '+PHASES[phaseIdx].name);}}
     if(isTouch){
       let best=null,bd=1e9;
       for(let i=0;i<enemies.length;i++){const e=enemies[i];if(e.dead||e.spawnT>0)continue;
@@ -1877,6 +1907,20 @@ function update(dt){
             dir.y=(player.position.y-e.g.position.y)/dist*.5;dir.normalize();
             tmpV.copy(e.g.position);tmpV.y+=.6;fireOrb(tmpV,dir,17+wave*.4,8);}
           sfx.eshot();}
+      }else if(e.type==='huscher'){
+        e.atkCd-=g;e.zig+=g*7;
+        const side=Math.sin(e.zig)*e.speed*.7;
+        if(dist>1.25){e.g.position.x+=(nx*e.speed-nz*side)*slow*g;e.g.position.z+=(nz*e.speed+nx*side)*slow*g;}
+        else if(e.atkCd<=0){e.atkCd=1.1;damagePlayer(7);e.kb.x-=nx*13;e.kb.z-=nz*13;}
+        e.g.position.y=.85+Math.abs(Math.sin(e.t*10))*.45;e.core.rotation.y+=g*8;
+      }else if(e.type==='waechter'){
+        const want=12,orbit=Math.sin(e.t*.8)*e.speed;
+        let sp=dist>want+2?e.speed:(dist<want-2?-e.speed*.7:0);sp*=slow;
+        e.g.position.x+=(nx*sp-nz*orbit)*g;e.g.position.z+=(nz*sp+nx*orbit)*g;
+        e.g.position.y=1.25+Math.sin(e.t*3)*.25;e.halo.rotation.z+=g*2.5;e.shootT-=g*slow;
+        if(e.shootT<=0&&dist<28){e.shootT=R(2.3,3.1);for(let k=-1;k<=1;k++){
+          const dir=rotY(new THREE.Vector3(nx,.02,nz),k*.28).normalize();fireOrb(tmpV.copy(e.g.position),dir,14+wave*.25,6);}
+          ring(e.g.position,0x62e8ef,3.5,12,.45);sfx.eshot();}
       }else if(e.type==='koloss'){
         e.slamCd-=g;
         if(e.windup>0){e.windup-=g;e.coreGlow.material.emissiveIntensity=1.5+(0.6-e.windup)*6;
@@ -2115,7 +2159,7 @@ function update(dt){
         const dd=Math.hypot(e.g.position.x,e.g.position.z);
         if(dd<13){damageEnemy(e,28);if(!e.dead){e.kb.x+=e.g.position.x/dd*14;e.kb.z+=e.g.position.z/dd*14;}}}}
     weatherT-=g;
-    if(weatherT<=0){weatherT=R(40,65);
+    if(weatherT<=0){weatherT=R(24,38);
       let ni;do{ni=(Math.random()*WEATHERS.length)|0;}while(ni===weatherIdx);
       weatherIdx=ni;const wv=WEATHERS[weatherIdx];
       banner([wv.name,wv.sub],false);seedWeather();

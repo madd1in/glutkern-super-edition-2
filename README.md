@@ -25,6 +25,10 @@ Ein eigenständiges Three.js-Browsergame. Öffne `index.html` oder spiele die ve
 - Vollständige Mobile-Steuerung mit Joystick, Halte-Feuer, Auto-Feuer, Fähigkeiten, Ton und Pause
 - Performance-Profil mit 0,82× Renderauflösung, deaktiviertem Antialiasing und reduzierten Effektpools
 - Dunkler Sky-Shader und dunkler Nebel; MP3-Musik deutlich vor leiseren SFX
+- Neue Gegner: zickzackende Huscher und orbitierende Sturmwächter mit Dreifachschuss
+- Neue Wetterlagen: Vulkanasche und Funkensturm; Wetter und Tageszeit wechseln dynamisch
+- Acht Low-Poly-Terrainzonen mit Basalt, Sand, Felsen und wechselnden Farbfeldern
+- Neues Wellenereignis „Schattenansturm“ und vielfältigere Gegnerzusammenstellungen
 
 ## Deployment
 
