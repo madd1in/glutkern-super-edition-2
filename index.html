@@ -129,28 +129,29 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
 #scanlines{position:absolute;inset:0;opacity:.1;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
 
 #mobile{position:absolute;inset:0;pointer-events:none}
-#mTop{position:absolute;right:14px;top:14px;display:flex;gap:8px;pointer-events:auto}
+#mTop{position:absolute;right:calc(12px + env(safe-area-inset-right));top:calc(118px + env(safe-area-inset-top));display:flex;gap:8px;pointer-events:auto}
 #mTop .mbtn{width:46px;height:46px;font-size:.9rem}
-#joyBase{position:absolute;left:24px;bottom:24px;width:134px;height:134px;border:2px solid rgba(255,106,43,.55);
+#joyBase{position:absolute;left:calc(24px + env(safe-area-inset-left));bottom:calc(24px + env(safe-area-inset-bottom));width:134px;height:134px;border:2px solid rgba(255,106,43,.55);
   border-radius:50%;background:rgba(22,11,8,.55);pointer-events:auto;touch-action:none;
   box-shadow:0 0 24px rgba(255,106,43,.25),inset 0 0 30px rgba(0,0,0,.5)}
 #joyKnob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#ffd9b0,#ff6a2b 72%);box-shadow:0 0 18px rgba(255,106,43,.7)}
-#mBtns{position:absolute;right:18px;bottom:24px;display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:auto}
+#mBtns{position:absolute;right:calc(18px + env(safe-area-inset-right));bottom:calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
 .mrow{display:flex;gap:12px}
 .mbtn{width:64px;height:64px;border:1.5px solid var(--line);background:rgba(22,11,8,.72);color:var(--gold);
   font-family:'Russo One';font-size:1.15rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   clip-path:polygon(22% 0,78% 0,100% 22%,100% 78%,78% 100%,22% 100%,0 78%,0 22%);
-  touch-action:none;-webkit-tap-highlight-color:transparent;cursor:pointer}
+  touch-action:none;-webkit-tap-highlight-color:transparent;cursor:pointer;pointer-events:auto}
 .mbtn span{font-size:.44rem;letter-spacing:.12em;font-family:'Chakra Petch'}
 .mbtn.big{width:92px;height:92px;border-color:rgba(94,242,255,.6);color:var(--cyan)}
 .mbtn.fire{border-color:rgba(255,179,71,.75);color:#ffe2a8;background:rgba(70,25,8,.82)}
 .mbtn.big.on{background:rgba(94,242,255,.16);box-shadow:0 0 24px rgba(94,242,255,.45)}
 .mbtn:active{filter:brightness(1.6)}
 @media(max-width:600px),(max-height:520px){
-  #joyBase{left:14px;bottom:14px;width:112px;height:112px}#joyKnob{width:50px;height:50px;margin:-25px}
-  #mBtns{right:10px;bottom:10px;gap:7px}.mrow{gap:7px}.mbtn{width:54px;height:54px}.mbtn.big{width:72px;height:72px}
+  #joyBase{left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));width:112px;height:112px}#joyKnob{width:50px;height:50px;margin:-25px}
+  #mBtns{right:calc(10px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));gap:7px}.mrow{gap:7px}.mbtn{width:54px;height:54px}.mbtn.big{width:72px;height:72px}
   #hudTL,#hudTR{transform:scale(.8);transform-origin:top left}#hudTR{transform-origin:top right}}
+@media(max-height:520px){#mTop{top:calc(70px + env(safe-area-inset-top))}}
 
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto;
   background:linear-gradient(180deg,rgba(9,4,3,.82),rgba(18,7,4,.58) 45%,rgba(34,12,5,.8))}
@@ -396,7 +397,7 @@ let W=innerWidth,H=innerHeight;
 const scene=new THREE.Scene();
 scene.fog=new THREE.FogExp2(0xcfe8ff,0.005);
 const camera=new THREE.PerspectiveCamera(55,W/H,0.1,700);
-const isTouch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>1;
+const isTouch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0||innerWidth<=900;
 if(isTouch)document.body.classList.add('touch');
 const LOW=isTouch;
 /* Klarer Direkt-Render ist absichtlich Standard: schneller und ohne ausgebrannte Lichter. */
@@ -2327,6 +2328,7 @@ function showGameOver(){
 
 function resetGame(){
   let i;
+  touchFire=false;joyX=joyY=0;keys.fire=false;
   for(i=0;i<enemies.length;i++)scene.remove(enemies[i].g);enemies.length=0;
   for(i=0;i<pickups.length;i++)scene.remove(pickups[i].g);pickups.length=0;
   for(i=0;i<geysers.length;i++)scene.remove(geysers[i].m);geysers.length=0;
@@ -2427,17 +2429,18 @@ if(isTouch){
     jb.setPointerCapture(e.pointerId);moveStick(e);});
   jb.addEventListener('pointermove',function(e){if(e.pointerId===stickId)moveStick(e);});
   const end=function(e){if(e.pointerId===stickId){stickId=null;joyX=joyY=0;jk.style.transform='translate(0,0)';}};
-  jb.addEventListener('pointerup',end);jb.addEventListener('pointercancel',end);
+  jb.addEventListener('pointerup',end);jb.addEventListener('pointercancel',end);jb.addEventListener('lostpointercapture',end);
   const bindBtn=function(id,fn){const b=$(id);
     b.addEventListener('pointerdown',function(e){e.preventDefault();fn();});};
   bindBtn('btnDash',doDash);bindBtn('btnNova',doNova);bindBtn('btnOrb',callOrbital);
   const fireBtn=$('btnFire');
   fireBtn.addEventListener('pointerdown',function(e){e.preventDefault();touchFire=true;fireBtn.setPointerCapture(e.pointerId);});
-  const stopFire=function(){touchFire=false;};fireBtn.addEventListener('pointerup',stopFire);fireBtn.addEventListener('pointercancel',stopFire);
+  const stopFire=function(){touchFire=false;};fireBtn.addEventListener('pointerup',stopFire);fireBtn.addEventListener('pointercancel',stopFire);fireBtn.addEventListener('lostpointercapture',stopFire);
   bindBtn('btnMute',function(){muted=!muted;if(master)master.gain.value=muted?0:.7;soundtrack.muted=muted;toast(muted?'TON AUS':'TON AN');});
   bindBtn('btnPause',function(){if(state==='playing')setPaused(!paused);});
   bindBtn('btnAuto',function(){autoFire=!autoFire;$('btnAuto').classList.toggle('on',autoFire);
     toast(autoFire?'AUTO-FEUER AN':'AUTO-FEUER AUS');});}
+addEventListener('visibilitychange',function(){if(document.hidden){touchFire=false;joyX=joyY=0;keys.fire=false;}});
 
 /* ---------- Render ---------- */
 const clock=new THREE.Clock();
