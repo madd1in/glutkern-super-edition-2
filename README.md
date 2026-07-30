@@ -9,7 +9,14 @@ Ein eigenständiges Three.js-Browsergame. Öffne `index.html` oder spiele die ve
 - Dash: `Shift`
 - Wirbel: `Leertaste`
 - Orbitalschlag: `E`
-- Ton / Pause: `M` / `P`
+- Ton / Grafik / Pause: `M` / `V` / `P`
+
+## Super Edition 2.1
+
+- Neuer MP3-Soundtrack „Marios Pilzpfad"
+- Ruhigeres Bloom und kontrastreicheres Tone-Mapping gegen Überbelichtung
+- Grafikmodus zur Laufzeit mit `V` umschaltbar
+- Audio-Parameter werden gegen ungültige Werte abgesichert
 
 ## Deployment
 
