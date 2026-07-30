@@ -130,28 +130,31 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
 
 #mobile{position:absolute;inset:0;pointer-events:none}
 #mTop{position:absolute;right:calc(12px + env(safe-area-inset-right));top:calc(118px + env(safe-area-inset-top));display:flex;gap:8px;pointer-events:auto}
-#mTop .mbtn{width:46px;height:46px;font-size:.9rem}
-#joyBase{position:absolute;left:calc(24px + env(safe-area-inset-left));bottom:calc(24px + env(safe-area-inset-bottom));width:134px;height:134px;border:2px solid rgba(255,106,43,.55);
+#mTop .mbtn{width:58px;height:58px;font-size:1.05rem}
+#joyBase{position:absolute;left:calc(24px + env(safe-area-inset-left));bottom:calc(24px + env(safe-area-inset-bottom));width:150px;height:150px;border:3px solid rgba(255,106,43,.65);
   border-radius:50%;background:rgba(22,11,8,.55);pointer-events:auto;touch-action:none;
   box-shadow:0 0 24px rgba(255,106,43,.25),inset 0 0 30px rgba(0,0,0,.5)}
-#joyKnob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px;border-radius:50%;
+#joyKnob{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#ffd9b0,#ff6a2b 72%);box-shadow:0 0 18px rgba(255,106,43,.7)}
 #mBtns{position:absolute;right:calc(18px + env(safe-area-inset-right));bottom:calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
 .mrow{display:flex;gap:12px}
-.mbtn{width:64px;height:64px;border:1.5px solid var(--line);background:rgba(22,11,8,.72);color:var(--gold);
-  font-family:'Russo One';font-size:1.15rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+.mbtn{width:72px;height:72px;border:2px solid var(--line);background:rgba(22,11,8,.8);color:var(--gold);
+  font-family:'Russo One';font-size:1.35rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   clip-path:polygon(22% 0,78% 0,100% 22%,100% 78%,78% 100%,22% 100%,0 78%,0 22%);
   touch-action:none;-webkit-tap-highlight-color:transparent;cursor:pointer;pointer-events:auto}
-.mbtn span{font-size:.44rem;letter-spacing:.12em;font-family:'Chakra Petch'}
-.mbtn.big{width:92px;height:92px;border-color:rgba(94,242,255,.6);color:var(--cyan)}
+.mbtn span{font-size:.56rem;letter-spacing:.1em;font-family:'Chakra Petch';font-weight:700}
+.mbtn.big{width:104px;height:104px;border-color:rgba(94,242,255,.7);color:var(--cyan)}
 .mbtn.fire{border-color:rgba(255,179,71,.75);color:#ffe2a8;background:rgba(70,25,8,.82)}
 .mbtn.big.on{background:rgba(94,242,255,.16);box-shadow:0 0 24px rgba(94,242,255,.45)}
 .mbtn:active{filter:brightness(1.6)}
-@media(max-width:600px),(max-height:520px){
-  #joyBase{left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));width:112px;height:112px}#joyKnob{width:50px;height:50px;margin:-25px}
-  #mBtns{right:calc(10px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));gap:7px}.mrow{gap:7px}.mbtn{width:54px;height:54px}.mbtn.big{width:72px;height:72px}
+@media(max-width:600px){
+  #joyBase{left:calc(12px + env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom));width:142px;height:142px}#joyKnob{width:66px;height:66px;margin:-33px}
+  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));gap:8px}.mrow{gap:8px}.mbtn{width:66px;height:66px}.mbtn.big{width:88px;height:88px}
   #hudTL,#hudTR{transform:scale(.8);transform-origin:top left}#hudTR{transform-origin:top right}}
-@media(max-height:520px){#mTop{top:calc(70px + env(safe-area-inset-top))}}
+@media(max-height:520px){
+  #mTop{top:calc(62px + env(safe-area-inset-top))}#mTop .mbtn{width:52px;height:52px}
+  #joyBase{left:calc(10px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom));width:122px;height:122px}#joyKnob{width:58px;height:58px;margin:-29px}
+  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));gap:6px}.mrow{gap:6px}.mbtn{width:60px;height:60px}.mbtn.big{width:80px;height:80px}}
 
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto;
   background:linear-gradient(180deg,rgba(9,4,3,.82),rgba(18,7,4,.58) 45%,rgba(34,12,5,.8))}
@@ -2428,7 +2431,7 @@ if(isTouch){
   const jb=$('joyBase'),jk=$('joyKnob');let stickId=null;
   const moveStick=function(e){const r=jb.getBoundingClientRect();
     let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
-    const d=Math.hypot(dx,dy),m=50;if(d>m){dx*=m/d;dy*=m/d;}
+    const d=Math.hypot(dx,dy),m=r.width*.36;if(d>m){dx*=m/d;dy*=m/d;}
     joyX=dx/m;joyY=dy/m;jk.style.transform='translate('+dx+'px,'+dy+'px)';};
   jb.addEventListener('pointerdown',function(e){e.preventDefault();stickId=e.pointerId;
     jb.setPointerCapture(e.pointerId);moveStick(e);});
