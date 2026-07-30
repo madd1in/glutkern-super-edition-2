@@ -32,6 +32,7 @@ Ein eigenständiges Three.js-Browsergame. Öffne `index.html` oder spiele die ve
 - Mobile Controls auf schmalen und hybriden Geräten erzwungen, Safe-Area-fest und gegen hängende Touch-Eingaben abgesichert
 - Tageszeit-Index beim Start und Neustart abgesichert; kein `PHASES[-1].hor`-Fehler mehr
 - Mobile Touch-Ziele, Beschriftungen und Joystick deutlich vergrößert; eigene Größen für Hoch- und Querformat
+- Echtes Twin-Stick-Gameplay: links bewegen, rechts zielen und feuern; Auto-Aim bleibt optional
 
 ## Deployment
 

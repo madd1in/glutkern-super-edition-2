@@ -136,7 +136,12 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
   box-shadow:0 0 24px rgba(255,106,43,.25),inset 0 0 30px rgba(0,0,0,.5)}
 #joyKnob{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#ffd9b0,#ff6a2b 72%);box-shadow:0 0 18px rgba(255,106,43,.7)}
-#mBtns{position:absolute;right:calc(18px + env(safe-area-inset-right));bottom:calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
+#aimBase{position:absolute;right:calc(18px + env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));width:176px;height:176px;border:3px solid rgba(94,242,255,.72);
+  border-radius:50%;background:rgba(8,32,38,.62);pointer-events:auto;touch-action:none;box-shadow:0 0 28px rgba(94,242,255,.2),inset 0 0 34px rgba(0,0,0,.55)}
+#aimBase::after{content:'ZIELEN + FEUERN';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:.5rem;letter-spacing:.08em;color:rgba(174,248,255,.65);white-space:nowrap}
+#aimKnob{position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px;border-radius:50%;z-index:1;
+  background:radial-gradient(circle at 35% 30%,#d9fdff,#31a9bb 72%);box-shadow:0 0 22px rgba(94,242,255,.7)}
+#mBtns{position:absolute;right:calc(12px + env(safe-area-inset-right));bottom:calc(204px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
 .mrow{display:flex;gap:12px}
 .mbtn{width:72px;height:72px;border:2px solid var(--line);background:rgba(22,11,8,.8);color:var(--gold);
   font-family:'Russo One';font-size:1.35rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
@@ -144,17 +149,18 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
   touch-action:none;-webkit-tap-highlight-color:transparent;cursor:pointer;pointer-events:auto}
 .mbtn span{font-size:.56rem;letter-spacing:.1em;font-family:'Chakra Petch';font-weight:700}
 .mbtn.big{width:104px;height:104px;border-color:rgba(94,242,255,.7);color:var(--cyan)}
-.mbtn.fire{border-color:rgba(255,179,71,.75);color:#ffe2a8;background:rgba(70,25,8,.82)}
 .mbtn.big.on{background:rgba(94,242,255,.16);box-shadow:0 0 24px rgba(94,242,255,.45)}
 .mbtn:active{filter:brightness(1.6)}
 @media(max-width:600px){
-  #joyBase{left:calc(12px + env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom));width:142px;height:142px}#joyKnob{width:66px;height:66px;margin:-33px}
-  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));gap:8px}.mrow{gap:8px}.mbtn{width:66px;height:66px}.mbtn.big{width:88px;height:88px}
+  #joyBase{left:calc(8px + env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));width:168px;height:168px}#joyKnob{width:78px;height:78px;margin:-39px}
+  #aimBase{right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));width:168px;height:168px}#aimKnob{width:78px;height:78px;margin:-39px}
+  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(184px + env(safe-area-inset-bottom));gap:8px}.mrow{gap:8px}.mbtn{width:70px;height:70px}
   #hudTL,#hudTR{transform:scale(.8);transform-origin:top left}#hudTR{transform-origin:top right}}
 @media(max-height:520px){
   #mTop{top:calc(62px + env(safe-area-inset-top))}#mTop .mbtn{width:52px;height:52px}
-  #joyBase{left:calc(10px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom));width:122px;height:122px}#joyKnob{width:58px;height:58px;margin:-29px}
-  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));gap:6px}.mrow{gap:6px}.mbtn{width:60px;height:60px}.mbtn.big{width:80px;height:80px}}
+  #joyBase{left:calc(8px + env(safe-area-inset-left));bottom:calc(8px + env(safe-area-inset-bottom));width:140px;height:140px}#joyKnob{width:66px;height:66px;margin:-33px}
+  #aimBase{right:calc(8px + env(safe-area-inset-right));bottom:calc(8px + env(safe-area-inset-bottom));width:140px;height:140px}#aimKnob{width:66px;height:66px;margin:-33px}
+  #mBtns{right:calc(8px + env(safe-area-inset-right));bottom:calc(154px + env(safe-area-inset-bottom));gap:6px}.mrow{gap:6px}.mbtn{width:62px;height:62px}}
 
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto;
   background:linear-gradient(180deg,rgba(9,4,3,.82),rgba(18,7,4,.58) 45%,rgba(34,12,5,.8))}
@@ -302,6 +308,7 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
     <div id="mTop">
       <button id="btnMute" class="mbtn">♪<span>TON</span></button>
       <button id="btnPause" class="mbtn">Ⅱ<span>PAUSE</span></button>
+      <button id="btnAuto" class="mbtn on">⌖<span>AUTO</span></button>
     </div>
     <div id="joyBase"><div id="joyKnob"></div></div>
     <div id="mBtns">
@@ -310,11 +317,8 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
         <button id="btnNova" class="mbtn">◉<span>WIRBEL</span></button>
         <button id="btnOrb" class="mbtn">☄<span>ORBITAL</span></button>
       </div>
-      <div class="mrow">
-        <button id="btnFire" class="mbtn big fire">●<span>FEUER</span></button>
-        <button id="btnAuto" class="mbtn big on">⌖<span>AUTO</span></button>
-      </div>
     </div>
+    <div id="aimBase"><div id="aimKnob"></div></div>
   </div>
 
   <div id="relic" class="overlay hidden">
@@ -357,7 +361,7 @@ body.firing .ch-ring{transform:scale(1.4);border-color:#fff}
         <div class="panel controls">
           <div class="panel-title">STEUERUNG</div>
           <div class="crow"><span>Bewegen</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / JOYSTICK</span></div>
-          <div class="crow"><span>Zielen / Feuern</span><span><kbd>MAUS</kbd><kbd>LMT</kbd> / AUTO</span></div>
+          <div class="crow"><span>Zielen / Feuern</span><span><kbd>MAUS</kbd><kbd>LMT</kbd> / RECHTER STICK</span></div>
           <div class="crow"><span>Dash &amp; Stomp / Wirbel</span><span><kbd>SHIFT</kbd> · <kbd>LEER</kbd></span></div>
           <div class="crow"><span>Orbitalschlag (50% Kern)</span><span><kbd>E</kbd> / BUTTON</span></div>
           <div class="crow"><span>Ton / Grafik / Pause</span><span><kbd>M</kbd> <kbd>V</kbd> <kbd>P</kbd></span></div>
@@ -1243,7 +1247,7 @@ let orbitalQ=null;
 let scrap=0,wLevel=1,scrapNeed=8;
 let geyserT=6,ltT=R(6,14),flashI=0,strikeT=4;
 let doubleT=0,healLeft=0,nextEvent=null;
-let joyX=0,joyY=0,autoFire=true,touchFire=false;
+let joyX=0,joyY=0,aimX=0,aimY=0,aimActive=false,autoFire=true;
 let companion=null,compAngle=0,compCd=0,compCore=null;
 const strikes=[],boltFx=[],pools=[];
 let boss=null,best=+(localStorage.getItem('glutkern_best')||0);
@@ -1719,13 +1723,14 @@ function update(dt){
     if(wave>0&&!bloodMoon){const cycle=((wave-1+Math.floor(waveTime/22))%PHASES.length+PHASES.length)%PHASES.length;
       if(cycle!==phaseIdx){phaseIdx=cycle;toast('TAGESZEIT: '+PHASES[phaseIdx].name);}}
     if(isTouch){
-      let best=null,bd=1e9;
-      for(let i=0;i<enemies.length;i++){const e=enemies[i];if(e.dead||e.spawnT>0)continue;
-        const dx=e.g.position.x-player.position.x,dz=e.g.position.z-player.position.z,d=dx*dx+dz*dz;
-        if(d<bd){bd=d;best=e;}}
-      if(best){aimPoint.set(best.g.position.x,0,best.g.position.z);keys.fire=autoFire||touchFire;}
-      else{tmpV.set(Math.sin(player.rotation.y),0,Math.cos(player.rotation.y)).multiplyScalar(12).add(player.position);
-        aimPoint.copy(tmpV);keys.fire=false;}}
+      if(aimActive){aimPoint.set(player.position.x+aimX*26,0,player.position.z+aimY*26);keys.fire=true;}
+      else{let best=null,bd=1e9;
+        for(let i=0;i<enemies.length;i++){const e=enemies[i];if(e.dead||e.spawnT>0)continue;
+          const dx=e.g.position.x-player.position.x,dz=e.g.position.z-player.position.z,d=dx*dx+dz*dz;
+          if(d<bd){bd=d;best=e;}}
+        if(best){aimPoint.set(best.g.position.x,0,best.g.position.z);keys.fire=autoFire;}
+        else{tmpV.set(Math.sin(player.rotation.y),0,Math.cos(player.rotation.y)).multiplyScalar(12).add(player.position);
+          aimPoint.copy(tmpV);keys.fire=false;}}}
     const mv=tmpV2.set(isTouch?joyX:(keys.d?1:0)-(keys.a?1:0),0,isTouch?joyY:(keys.s?1:0)-(keys.w?1:0));
     let speed=11.5*speedMult*(rauschT>0?1.2:1)*(starT>0?1.2:1),moving=mv.lengthSq()>.01;
     if(dashT>0){dashT-=g;speed=38*speedMult;mv.copy(dashDir);moving=true;
@@ -2335,7 +2340,7 @@ function showGameOver(){
 
 function resetGame(){
   let i;
-  touchFire=false;joyX=joyY=0;keys.fire=false;
+  aimActive=false;aimX=aimY=joyX=joyY=0;keys.fire=false;
   for(i=0;i<enemies.length;i++)scene.remove(enemies[i].g);enemies.length=0;
   for(i=0;i<pickups.length;i++)scene.remove(pickups[i].g);pickups.length=0;
   for(i=0;i<geysers.length;i++)scene.remove(geysers[i].m);geysers.length=0;
@@ -2438,17 +2443,24 @@ if(isTouch){
   jb.addEventListener('pointermove',function(e){if(e.pointerId===stickId)moveStick(e);});
   const end=function(e){if(e.pointerId===stickId){stickId=null;joyX=joyY=0;jk.style.transform='translate(0,0)';}};
   jb.addEventListener('pointerup',end);jb.addEventListener('pointercancel',end);jb.addEventListener('lostpointercapture',end);
+  const ab=$('aimBase'),ak=$('aimKnob');let aimId=null;
+  const moveAim=function(e){const r=ab.getBoundingClientRect();
+    let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+    const d=Math.hypot(dx,dy),m=r.width*.36;if(d>m){dx*=m/d;dy*=m/d;}
+    aimX=dx/m;aimY=dy/m;aimActive=Math.hypot(aimX,aimY)>.16;
+    ak.style.transform='translate('+dx+'px,'+dy+'px)';};
+  ab.addEventListener('pointerdown',function(e){e.preventDefault();aimId=e.pointerId;ab.setPointerCapture(e.pointerId);moveAim(e);});
+  ab.addEventListener('pointermove',function(e){if(e.pointerId===aimId)moveAim(e);});
+  const endAim=function(e){if(e.pointerId===aimId){aimId=null;aimActive=false;aimX=aimY=0;ak.style.transform='translate(0,0)';}};
+  ab.addEventListener('pointerup',endAim);ab.addEventListener('pointercancel',endAim);ab.addEventListener('lostpointercapture',endAim);
   const bindBtn=function(id,fn){const b=$(id);
     b.addEventListener('pointerdown',function(e){e.preventDefault();fn();});};
   bindBtn('btnDash',doDash);bindBtn('btnNova',doNova);bindBtn('btnOrb',callOrbital);
-  const fireBtn=$('btnFire');
-  fireBtn.addEventListener('pointerdown',function(e){e.preventDefault();touchFire=true;fireBtn.setPointerCapture(e.pointerId);});
-  const stopFire=function(){touchFire=false;};fireBtn.addEventListener('pointerup',stopFire);fireBtn.addEventListener('pointercancel',stopFire);fireBtn.addEventListener('lostpointercapture',stopFire);
   bindBtn('btnMute',function(){muted=!muted;if(master)master.gain.value=muted?0:.7;soundtrack.muted=muted;toast(muted?'TON AUS':'TON AN');});
   bindBtn('btnPause',function(){if(state==='playing')setPaused(!paused);});
   bindBtn('btnAuto',function(){autoFire=!autoFire;$('btnAuto').classList.toggle('on',autoFire);
-    toast(autoFire?'AUTO-FEUER AN':'AUTO-FEUER AUS');});}
-addEventListener('visibilitychange',function(){if(document.hidden){touchFire=false;joyX=joyY=0;keys.fire=false;}});
+    toast(autoFire?'AUTO-AIM AN':'AUTO-AIM AUS');});}
+addEventListener('visibilitychange',function(){if(document.hidden){aimActive=false;aimX=aimY=joyX=joyY=0;keys.fire=false;}});
 
 /* ---------- Render ---------- */
 const clock=new THREE.Clock();
